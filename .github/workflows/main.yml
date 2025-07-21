@@ -1,0 +1,20 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Print this first
+        run: echo "Hello World"
+
+      - name: Print this second
+        run: echo "How you doing"
