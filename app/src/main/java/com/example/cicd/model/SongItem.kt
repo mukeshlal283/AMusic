@@ -1,6 +1,6 @@
 package com.example.cicd.model
 
-data class SongList(
+data class SongItem(
     val id: String,
     val index: Int,
     val audio: String,
@@ -8,4 +8,6 @@ data class SongList(
     val duration: Int,
     val image: String,
     val name: String,
-)
+) {
+    constructor(): this("", 0, "", "", 0, "", "")
+}

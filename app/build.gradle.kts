@@ -68,6 +68,10 @@ dependencies {
     implementation(libs.exoplayer.core)
     implementation(libs.exoplayer.ui)
     implementation(libs.exoplayer.dash)
+    implementation(libs.facebook.shimmer)
+
+    // for notification that makes suitable notification for play music features
+    implementation(libs.media)
     
 //    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
 //    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'

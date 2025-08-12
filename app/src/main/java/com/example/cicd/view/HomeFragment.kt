@@ -1,19 +1,19 @@
 package com.example.cicd.view
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.example.cicd.R
 import com.example.cicd.adapter.MusicAdapter
 import com.example.cicd.databinding.FragmentHomeBinding
 import com.example.cicd.model.MusicItem
-import com.example.cicd.model.SongList
+import com.example.cicd.model.SongItem
+import com.example.cicd.utils.Constant.currentIndex
 import com.example.cicd.utils.Constant.songList
+import com.example.cicd.view.activity.MusicPlayActivity
 import com.example.cicd.viewmodel.MusicViewModel
 
 class HomeFragment : Fragment() {
@@ -32,10 +32,11 @@ class HomeFragment : Fragment() {
             adapter = MusicAdapter(::onItemClicked)
             binding.recyclerView.adapter = adapter
             adapter.differ.submitList(musicList)
+            binding.shimmerView.visibility = View.GONE
 
             var indexValue = 0
             for (i in musicList) {
-                val data = SongList(i.id, indexValue, i.audio, i.audiodownload, i.duration, i.image, i.name)
+                val data = SongItem(i.id, indexValue, i.audio, i.audiodownload, i.duration, i.image, i.name)
                 songList.add(data)
                 indexValue++
             }
@@ -47,14 +48,21 @@ class HomeFragment : Fragment() {
     }
 
     fun onItemClicked(data: MusicItem) {
-        val bundle = Bundle()
-        bundle.putString("id", data.id)
-        bundle.putString("songName", data.name)
-        bundle.putString("img", data.image)
-        bundle.putString("audio", data.audio)
-        bundle.putString("download", data.audiodownload)
 
-        findNavController().navigate(R.id.action_homeFragment_to_musicPlayFragment, bundle)
+        getCurrentIndex(data.id)
+
+        val intent = Intent(requireActivity(), MusicPlayActivity::class.java)
+        startActivity(intent)
+
+
+    }
+
+    private fun getCurrentIndex(id: String) {
+        for (i in songList) {
+            if (id == i.id) {
+                currentIndex = i.index
+            }
+        }
     }
 
 }

@@ -11,14 +11,18 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.cicd.R
 import com.example.cicd.databinding.FragmentRegisterBinding
+import com.example.cicd.model.User
+import com.example.cicd.utils.Constant.getName
 import com.example.cicd.view.activity.MainActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterFragment : Fragment() {
 
     private lateinit var binding: FragmentRegisterBinding
     private val auth = Firebase.auth
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,9 +43,11 @@ class RegisterFragment : Fragment() {
             if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(requireContext(), "Registered Successfully!!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(requireContext(), MainActivity::class.java))
-                        requireActivity().finish()
+                        val currentUserId = auth.currentUser!!.uid
+                        val userData = User(currentUserId, name, email, password)
+                        firestore.collection("users").document(currentUserId).set(userData).addOnSuccessListener {
+                            getNameFromdb(currentUserId)
+                        }
                     }
                 } .addOnFailureListener {
                     Toast.makeText(requireContext(), it.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -54,6 +60,15 @@ class RegisterFragment : Fragment() {
 
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun getNameFromdb(userId: String) {
+        firestore.collection("users").document(userId).get().addOnSuccessListener { document ->
+            getName = document.getString("name")
+            Toast.makeText(requireContext(), "Registered Successfully!! $getName", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().finish()
+        }
     }
 
 
